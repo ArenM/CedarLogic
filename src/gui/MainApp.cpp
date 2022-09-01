@@ -3,7 +3,7 @@
    Copyright 2006 Cedarville University, Benjamin Sprague,
                      Matt Lewellyn, and David Knierim
    All rights reserved.
-   For license information see license.txt included with distribution.   
+   For license information see license.txt included with distribution.
 
    MainApp: Main application object
 *****************************************************************************/
@@ -36,7 +36,7 @@ bool MainApp::OnInit()
     logfile.open( "guilog.log" );
 #endif
 	loadSettings();
-	
+
     wxFileSystem::AddHandler( new wxZipFSHandler );
 	helpController = new wxHelpController;
 	helpController->Initialize(appSettings.helpFile);
@@ -59,7 +59,7 @@ bool MainApp::OnInit()
 	//	wxFileName fName(cmdFilename);
 	//	fName.Normalize(wxPATH_NORM_LONG|wxPATH_NORM_DOTS|wxPATH_NORM_TILDE|wxPATH_NORM_ABSOLUTE);
 	//	cmdFilename = fName.GetFullPath();
-    //}	
+    //}
     string cmdFilename;
 	if( argc >= 2 ){
 		// inserted the cast  KAS
@@ -68,28 +68,28 @@ bool MainApp::OnInit()
 	}
 	//End of edit
 	//**********************************
-	
+
 
     // create the main application window
     MainFrame *frame = new MainFrame(VERSION_TITLE(), cmdFilename.c_str());
     // and show it (the frames, unlike simple controls, are not shown when
     // created initially)
     frame->Show(true);
-    
+
     //**********************************************************
     //Edit by Joshua Lansford 12/31/06
-    //Acording to 
+    //Acording to
     //http://www.wxwidgets.org/manuals/2.6.3/wx_wxappoverview.html#wxappoverview
     //the following function should be called at this time
     SetTopWindow(frame);
-    
+
     mainframe = frame;
     //End of edit***********************************************
-    
+
     // success: wxApp::OnRun() will be called which will enter the main message
     // loop and the application will run. If we returned false here, the
     // application would exit immediately
-	
+
     return true;
 }
 
@@ -118,7 +118,7 @@ void MainApp::loadSettings() {
 	
 	string settingsIni = pathToExe + "res/settings.ini";
 	ifstream iniFile( settingsIni.c_str(), ios::in );
-	
+
 	if (!iniFile) {
 		// set defaults
 		appSettings.gateLibFile = pathToExe + "res/cl_gatedefs.xml";
@@ -210,14 +210,14 @@ void MainApp::loadSettings() {
 
         // all done
         iniFile.close();
-		
+
 		// check screen coords
 		wxScreenDC sdc;
 		if ( appSettings.mainFrameLeft + (signed int)(appSettings.mainFrameWidth) > (signed int)(sdc.GetSize().GetWidth()) ||
 			appSettings.mainFrameTop + (signed int)(appSettings.mainFrameHeight) > (signed int)(sdc.GetSize().GetHeight()) ) {
-		
+
 			appSettings.mainFrameWidth = appSettings.mainFrameHeight = 600;
-			appSettings.mainFrameLeft = appSettings.mainFrameTop = 20;	
+			appSettings.mainFrameLeft = appSettings.mainFrameTop = 20;
 		}
 
 	}
