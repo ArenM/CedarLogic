@@ -190,9 +190,9 @@ MainFrame::MainFrame(const wxString& title, string cmdFilename)
 	toolBar->AddTool(Tool_Pause, "Pause/Resume", *bmp[9], "Pause/Resume", wxITEM_CHECK);
 	toolBar->AddTool(Tool_Step, "Step", *bmp[10], "Step");
 	timeStepModSlider = new wxSlider(toolBar, wxID_ANY, wxGetApp().timeStepMod, 1, 500, wxDefaultPosition, wxSize(125,-1), wxSL_HORIZONTAL|wxSL_AUTOTICKS);
-	ostringstream oss;
+	wxString oss;
 	oss << wxGetApp().timeStepMod << "ms";
-	timeStepModVal = new wxStaticText(toolBar, wxID_ANY, (const wxChar *)oss.str().c_str(), wxDefaultPosition, wxSize(45, -1), wxSUNKEN_BORDER | wxALIGN_RIGHT | wxST_NO_AUTORESIZE);  // added cast KAS
+	timeStepModVal = new wxStaticText(toolBar, wxID_ANY, oss, wxDefaultPosition, wxSize(45, -1), wxSUNKEN_BORDER | wxALIGN_RIGHT | wxST_NO_AUTORESIZE);  // added cast KAS
 	toolBar->AddControl( timeStepModSlider );
 	toolBar->AddControl( timeStepModVal );
 	toolBar->AddSeparator();
@@ -859,10 +859,10 @@ void MainFrame::OnHelpContents(wxCommandEvent& event) {
 }
 
 void MainFrame::OnTimeStepModSlider(wxScrollEvent& event) {
-	ostringstream oss;
+	wxString oss;
 	oss << wxGetApp().timeStepMod << "ms";
 	wxGetApp().timeStepMod = timeStepModSlider->GetValue();
-	timeStepModVal->SetLabel((const wxChar *)oss.str().c_str()); // KAS
+	timeStepModVal->SetLabel(oss);
 }
 
 
