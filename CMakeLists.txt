@@ -28,42 +28,49 @@ include(MsStaticRuntimeLibs)
 ##
 
 # Use static runtime libs.
-ms_static_runtime_libs()
+# ms_static_runtime_libs()
 
 # Read environment variable, but if it is not set, use installer default location.
-if ("$ENV{WXWIN}" STREQUAL "")
-    set(ENV{WXWIN} "C:/wxWidgets-2.8.12")
-endif()
-set(wxwin "$ENV{WXWIN}" CACHE STRING "Path to wxWidgets install folder.")
+# if ("$ENV{WXWIN}" STREQUAL "")
+#     set(ENV{WXWIN} "C:/wxWidgets-2.8.12")
+# endif()
+# set(wxwin "$ENV{WXWIN}" CACHE STRING "Path to wxWidgets install folder.")
 
-# Set special variables read-in by functions from LibraryTools module.
-set(wx_widgets_include
-    "${wxwin}/include"
-)
-set(wx_widgets_linklibs
-    "comctl32.lib"
-    "rpcrt4.lib"
-    "winmm.lib"
-    "wsock32.lib"
-    "opengl32.lib"
-    "glu32.lib"
-)
+# # Set special variables read-in by functions from LibraryTools module.
+# set(wx_widgets_include
+#     # "/nix/store/m7023di3gx8hfrz2j36pizddhppimagc-wxGTK-2.8.12.1"
+#     "/nix/store/m7023di3gx8hfrz2j36pizddhppimagc-wxGTK-2.8.12.1/include/wx-2.8"
+#     # "/usr/include/wx-3.2"
+# )
+# set(wx_widgets_linklibs
+#     "comctl32.lib"
+#     "rpcrt4.lib"
+#     "winmm.lib"
+#     "wsock32.lib"
+#     "opengl32.lib"
+#     "glu32.lib"
+# )
 
-# Use the variables above to define the cmake library targets.
-set(Libraries
-    wx_widgets
-)
-import_libraries(${Libraries})
+# # Use the variables above to define the cmake library targets.
+# set(Libraries
+#     wx_widgets
+# )
+# import_libraries(${Libraries})
 
+find_package(wxWidgets 2.8.1 COMPONENTS html aui adv gl core base REQUIRED)
+include( "${wxWidgets_USE_FILE}" )
+
+find_package(OpenGL REQUIRED)
 
 ###
 ### Build Config.
 ###
 
-link_directories("${wxwin}/lib/vc_lib" Logic)
+# link_directories("${wxwin}/lib/vc_lib" Logic)
 
 # Glob all the source files to be added when CedarLogic executable is added later.
 file(GLOB SRC_FILES 
+	SRCS
 	"${PROJECT_SOURCE_DIR}/src/*.cpp"
 	"${PROJECT_SOURCE_DIR}/src/gui/*.cpp"
 	"${PROJECT_SOURCE_DIR}/src/logic/*.cpp"
@@ -80,8 +87,13 @@ add_executable(CedarLogic WIN32 "${SRC_FILES}")
 
 # Add the external libraries for CedarLogic
 target_link_libraries(CedarLogic PRIVATE 
+    ${OPENGL_opengl_LIBRARY}
+    ${OPENGL_glu_LIBRARY}
+    ${OPENGL_egl_LIBRARY}
     ${Libraries}
-    Logic
+    Logic # TODO: wehre does this come from?
+    ${wxWidgets_LIBRARIES}
+    # ${OPENGL_gl_LIBRARY}
 )
 
 # This is for internal headers
@@ -91,6 +103,7 @@ include_directories(
 	"${PROJECT_SOURCE_DIR}/include/logic/"
 	"${PROJECT_SOURCE_DIR}/include/gui/command/"
 	"${PROJECT_SOURCE_DIR}/include/gui/GLFont/"
+	"${CMAKE_CURRENT_BINARY_DIR}"
 )
 
 add_subdirectory(
@@ -99,34 +112,36 @@ add_subdirectory(
 
 # These are for external headers
 # Including PROJECT_BINARY_DIR gets CedarLogic.h with the version info.
-target_include_directories(CedarLogic
-    PRIVATE
-        "${PROJECT_BINARY_DIR}"
-        "${wxwin}/include/msvc"
-        "${wxwin}/contrib/include"
-)
+# target_include_directories(CedarLogic
+#     PRIVATE
+#         "${PROJECT_BINARY_DIR}"
+#         "${wxwin}/include/msvc"
+#         "${wxwin}/contrib/include"
+# )
 
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-target_compile_options(CedarLogic
-    PRIVATE
-        /FI"${wxwin}/include/msvc/wx/setup.h"
-        /FI"${wxwin}/include/wx/wxprec.h"
-        /MP
-)
+# target_compile_options(CedarLogic
+#     PRIVATE
+        # /FI"${wxwin}/include/msvc/wx/setup.h"
+        # /FI"/usr/lib/wx/include/gtk3-unicode-3.2/wx/setup.h"
+	# /FI"/usr/lib/wx/include/gtk3-unicode-3.2/wx/setup.h"
+        # /FI"/usr/include/wx-3.2/wx/wxprec.h"
+        # /MP
+# )
 
 target_compile_definitions(CedarLogic
     PRIVATE
         "_PRODUCTION_"
-        "WIN32"
-        "STRICT"
-        "__WXMSW__"
-        "__WX__"
-        "__WXDEBUG__"
-        "_WINDOWS"
-        "_CRT_SECURE_NO_DEPRECATE"
+#         # "WIN32"
+#         # "STRICT"
+#         # "__WXMSW__"
+#         # "__WX__"
+#         # "__WXDEBUG__"
+#         # "_WINDOWS"
+#         # "_CRT_SECURE_NO_DEPRECATE"
 )
 
 ###
@@ -169,4 +184,4 @@ set(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS
     "\\\${unregisterExtension} \\\".cdl\\\" \\\"CedarLogic Project\\\""
 )
 
-include(CPack)
+# include(CPack)
