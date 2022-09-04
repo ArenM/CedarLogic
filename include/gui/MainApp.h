@@ -18,6 +18,7 @@
 #include "wx/docview.h"
 #include "wx/help.h"
 #include "wx/fs_zip.h"
+#include "wx/glcanvas.h"
 #include "threadLogic.h"
 #include "autoSaveThread.h"
 #include "logic_values.h"
@@ -54,6 +55,7 @@ class MainApp : public wxApp {
 public:
 	MainApp();
 	virtual bool OnInit();
+	wxGLContext& GetContext(wxGLCanvas *canvas);
 
 public:
     // crit section protects access to all of the arrays below
@@ -111,6 +113,10 @@ public:
 	
 private:
 	void loadSettings( void );
+
+	// opengl context used for all rendering
+	// TODO: does this need to be part of each widget that uses opengl?
+	wxGLContext *glContext;
 };
 
 #endif /*MAINAPP_H_*/
