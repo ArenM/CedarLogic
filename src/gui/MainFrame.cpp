@@ -238,9 +238,9 @@ MainFrame::MainFrame(const wxString& title, string cmdFilename)
 	//add 1 tab: Left loop to allow for different default
 	for (int i = 0; i < 1; i++) {
 		canvases.push_back(new GUICanvas(canvasBook, gCircuit, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxWANTS_CHARS));
-		ostringstream oss;
+		wxString oss;
 		oss << "Page " << (i+1);
-		canvasBook->AddPage(canvases[i], (const wxChar *)oss.str().c_str(), (i == 0 ? true : false));  // KAS
+		canvasBook->AddPage(canvases[i], oss);
 	}
 
 	currentCanvas = canvases[0];
