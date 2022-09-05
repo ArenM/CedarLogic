@@ -99,10 +99,11 @@ void klsMiniMap::setViewport() {
 
 // Print the canvas contents to a bitmap:
 void klsMiniMap::generateImage() {
-//WARNING!!! Heavily platform-dependent code ahead! This only works in MS Windows because of the
-// DIB Section OpenGL rendering.
-
 	wxSize sz = GetClientSize();
+
+#ifdef _WINDOWS
+	// WARNING!!! Heavily platform-dependent code ahead! This only works in MS Windows because of the
+	// DIB Section OpenGL rendering.
 
 	// Create a DIB section.
 	// (The Windows wxBitmap implementation will create a DIB section for a bitmap if you set
@@ -138,6 +139,7 @@ void klsMiniMap::generateImage() {
     HGLRC oldhRC = ::wglGetCurrentContext();
     HDC oldDC = ::wglGetCurrentDC();
     ::wglMakeCurrent( (HDC) theHDC, hRC );
+#endif
 
 	// Setup the viewport for rendering:
 	setViewport();
@@ -169,6 +171,7 @@ void klsMiniMap::generateImage() {
 	// Flush the OpenGL buffer to make sure the rendering has happened:	
 	glFlush();
 	
+#ifdef _WINDOWS
 	// Destroy the OpenGL rendering context, release the memDC, and
 	// convert the DIB Section into a wxImage to return to the caller:
     ::wglMakeCurrent( oldDC, oldhRC );
@@ -176,6 +179,18 @@ void klsMiniMap::generateImage() {
     ::wglDeleteContext( hRC );
 	myDC.SelectObject(wxNullBitmap);
 	mapImage = theBM.ConvertToImage();
+#elif __linux__
+	int width = sz.GetWidth();
+	int height = sz.GetHeight();
+
+	uint8_t* pixels = new uint8_t[3 * width * height];
+	// TODO: this reads pixels upside down, and doesn't correct for it
+	glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+	mapImage = wxImage(width, height, true);
+	mapImage.SetData(pixels);
+	/* glPixelZoom(1,1); */
+#endif
 }
 
 void klsMiniMap::renderMap() {
