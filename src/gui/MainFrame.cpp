@@ -278,7 +278,7 @@ MainFrame::MainFrame(const wxString& title, string cmdFilename)
 	this->SetSize( wxGetApp().appSettings.mainFrameLeft, wxGetApp().appSettings.mainFrameTop, wxGetApp().appSettings.mainFrameWidth, wxGetApp().appSettings.mainFrameHeight );
 	
 	doOpenFile = (cmdFilename.size() > 0);
-	this->openedFilename = (const wxChar *)cmdFilename.c_str(); // KAS
+	this->openedFilename = cmdFilename;
 
 	if (ifstream(CRASH_FILENAME)) {
 		wxMessageDialog dialog(this, "Oops! It seems like there may have been a crash.\nWould you like to try to recover your work?", "Recover File", wxYES_DEFAULT | wxYES_NO | wxICON_QUESTION);
@@ -549,7 +549,7 @@ void MainFrame::OnOpen(wxCommandEvent& event) {
 //it starts, that cedarls can load that file
 //by calling this method.
 void MainFrame::loadCircuitFile( string fileName ){
-	wxString path = (const wxChar *)fileName.c_str();  // KAS
+	wxString path = fileName;
 	
 	openedFilename = path;
 	this->SetTitle(VERSION_TITLE() + " - " + path );
@@ -573,7 +573,7 @@ void MainFrame::loadCircuitFile( string fileName ){
 	{
 		ostringstream oss;
 		oss << "Page " << (i + 1);
-		canvasBook->AddPage(canvases[i], (const wxChar *)oss.str().c_str(), (i == 0 ? true : false));
+		canvasBook->AddPage(canvases[i], oss.str(), (i == 0 ? true : false));
 	}
 	currentCanvas = canvases[0];
 	gCircuit->setCurrentCanvas(currentCanvas);
@@ -1014,7 +1014,7 @@ void MainFrame::OnNewTab(wxCommandEvent& event) {
 /*	canvases.push_back(new GUICanvas(canvasBook, gCircuit, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxWANTS_CHARS));
 	ostringstream oss;
 	oss << "Page " << canvases.size();
-	canvasBook->AddPage(canvases[canvases.size()-1], (const wxChar *)oss.str().c_str(), (false));*/
+	canvasBook->AddPage(canvases[canvases.size()-1], oss.str(), false);*/
 
 }
 
