@@ -14,6 +14,8 @@
 #include "klsClipboard.h"
 #include "guiWire.h"
 
+#include <wx/dnd.h>
+
 // Included to use the min() and max() templates:
 #include <algorithm>
 #include <iostream>
@@ -24,6 +26,37 @@ DECLARE_APP(MainApp)
 
 unsigned int renderTime = 0;
 unsigned int renderNum = 0;
+
+// TODO: this should probably get it's own file
+class DnDText : public wxTextDropTarget
+{
+public:
+    DnDText(GUICanvas* canvas) { m_canvas = canvas; }
+
+    virtual bool OnDropText(wxCoord x, wxCoord y, const wxString& text) wxOVERRIDE;
+	
+private:
+	GUICanvas* m_canvas;
+};
+
+bool DnDText::OnDropText(wxCoord x, wxCoord y, const wxString& text)
+{
+	// from klsGLCanvas::setMouseCoords()
+	// TODO: it would probably be better to make a call to it, but that would
+	// require making it public
+	// TODO: dragging text that isn't a component name can cause issues
+	int w, h;
+	m_canvas->GetClientSize(&w, &h);
+	float glX = m_canvas->panX + (x * m_canvas->viewZoom);
+	float glY = m_canvas->panY - (y * m_canvas->viewZoom);
+	GLPoint2f m(glX, glY);
+
+	cout << "x: " << glX << "\n";
+	cout << "y: " << glY << "\n";
+	cout << "Got text:\n" << text << "\n";
+	m_canvas->addDragGate(text.ToStdString(), m);
+	return true;
+}
 
 // GUICanvas constructor - defaults grid size to 1 unit square
 GUICanvas::GUICanvas(wxWindow *parent, GUICircuit* gCircuit, wxWindowID id,
@@ -49,6 +82,8 @@ GUICanvas::GUICanvas(wxWindow *parent, GUICircuit* gCircuit, wxWindowID id,
 	// Add drag selection box to collision checker
 	dragselectbox = new klsCollisionObject( COLL_SELBOX );
 	collisionChecker.addObject( dragselectbox );
+
+	SetDropTarget(new DnDText(this));
 }
 
 GUICanvas::~GUICanvas() {
@@ -930,6 +965,29 @@ void GUICanvas::OnMouseUp(wxMouseEvent& event) {
 	currentDragState = DRAG_NONE;
 	
 	Update();
+}
+
+// Add a gate from a drag and drop operation.
+//
+// The way this was originally done relied on mouse events switching from the
+// selector pane to the main canvas, which doesn't happen when using gtk.
+//
+// This is a really hacky solution, but it seems to work, and I don't want to
+// refactor OnMouseUp to do it better.
+void GUICanvas::addDragGate(string gate, GLPoint2f m) {
+	newDragGate = gCircuit->createGate(gate, -1);
+	if (newDragGate == NULL) return;
+
+	newDragGate->setGLcoords(m.x, m.y);
+
+	currentDragState = DRAG_NEWGATE;
+
+	unselectAllGates();
+	newDragGate->select();
+	collisionChecker.addObject( newDragGate );
+
+	wxMouseEvent ev = wxMouseEvent(wxEVT_LEFT_UP);
+	OnMouseUp(ev);
 }
 
 void GUICanvas::OnMouseEnter(wxMouseEvent& event) {
