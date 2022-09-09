@@ -188,6 +188,9 @@ public:
 	void autoScrollDisable(void) { autoScrollActive = false; };
 	bool isAutoScrollOn(void) { return autoScrollActive; };
 
+	GLdouble viewZoom;
+	GLdouble panX, panY;
+
 protected:
 	// The minimap associated with this canvas
 	klsMiniMap* minimap;
@@ -217,8 +220,8 @@ private:
 	bool glInitialized; // Is OpenGL initialized on this canvas
 
 	// Zoom and OpenGL coordinate of upper-left corner of this canvas:
-	GLdouble viewZoom;
-	GLdouble panX, panY;
+	/* GLdouble viewZoom; */
+	/* GLdouble panX, panY; */
 	
 	// Scrolling timer used to auto-scroll the canvas when dragged outside of the
 	// window:

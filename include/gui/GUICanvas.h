@@ -130,6 +130,7 @@ public:
 
     void OnMouseUp(wxMouseEvent& event);
     void OnMouseMove( GLdouble glX, GLdouble glY, bool ShiftDown, bool CtrlDown );
+	void addDragGate(string gate, GLPoint2f m);
     void OnMouseEnter(wxMouseEvent& event);
 
     void OnKeyDown(wxKeyEvent& event);
