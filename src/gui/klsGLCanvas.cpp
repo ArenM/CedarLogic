@@ -388,7 +388,6 @@ void klsGLCanvas::wxOnSize(wxSizeEvent& event)
 {
 	wxGetApp().GetContext(this);
 	Refresh();
-
 }
 
 
