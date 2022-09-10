@@ -100,6 +100,7 @@ bool MainApp::OnInit()
 
 void MainApp::loadSettings() {
 
+#ifdef _WINDOWS
 	// Get app full path.
 	HMODULE hModule = GetModuleHandle(NULL);
 	CHAR path[MAX_PATH];
@@ -120,7 +121,10 @@ void MainApp::loadSettings() {
 	if (pathToExe.find("Debug") != string::npos || pathToExe.find("Release") != string::npos) {
 		pathToExe = "";
 	}
-	
+#else
+	pathToExe = "";
+#endif
+
 	string settingsIni = pathToExe + "res/settings.ini";
 	ifstream iniFile( settingsIni.c_str(), ios::in );
 
